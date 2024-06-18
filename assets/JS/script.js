@@ -27,11 +27,16 @@ window.addEventListener('scroll',() =>{
 
     window.scrollY > 50 ?  navbar.classList.add('scroll') : navbar.classList.remove('scroll')
 
-    if (window.scrollY >= progress.offsetTop - 150) {
+    {if (window.scrollY >= progress.offsetTop - 150) {
         spans.forEach((e) => {
             e.style.width = e.dataset.width
         })
     }
+    else {
+        spans.forEach((e) => {
+            e.style.width = '0'
+        })
+    }}
 
     if (window.scrollY >= numbers.offsetTop - 500) {
         if (!started) {
@@ -62,72 +67,57 @@ window.addEventListener('load', () => {
 // Animation With Typed JS Library
 let typed = new Typed('.auto-type' ,
     {
-        strings: ["Fatimah Mse" , "Software Engineering" , "WEB Developer"],
+        strings: ["Fatimah Mselmani" , "Software Engineering" , "WEB Developer"],
         typeSpeed: 60,
         backSpeed: 60,
         loop: true
     }) 
 
 // Show Portfolio
-function show (obj) {
+const filterList = document.querySelector(".filter")
+const filterButtons = filterList.querySelectorAll(".filter-btn")
+const conferences = document.querySelectorAll(".conference")
 
-    let title = document.querySelectorAll('.titles p')
-    let all = document.querySelectorAll('.all')
-    let tasks = document.querySelectorAll('.tasks')
-    let js = document.querySelectorAll('.js')
-    let other = document.querySelectorAll('.other')
+let conferenceIndex = 0
+AOS.init()
 
-    title.forEach(e => {
-        e.classList.remove('active')
+conferences.forEach((conference) => {
+  conference.style.viewTransitionName = `conf-${++conferenceIndex}`
+})
+
+filterButtons.forEach((button) => {
+  button.addEventListener("click", (e) => {
+    let confCategory = e.target.getAttribute("data-filter")
+
+    if (!document.startViewTransition) {
+      updateActiveButton(e.target)
+      filterEvents(confCategory)
+    }
+
+    document.startViewTransition(() => {
+      updateActiveButton(e.target)
+      filterEvents(confCategory)
+      AOS.refresh()
     })
-    obj.classList.add('active')
+  })
+})
 
-    if (obj.id === 'tasks') {
-        tasks.forEach(e => {
-            e.style.display = 'flex'
-        })
-        js.forEach(e => {
-            e.style.display = 'none'
-        })
-        other.forEach(e => {
-            e.style.display = 'none'
-        })
-        AOS.refresh()
-    }
-    else if (obj.id === 'js') {
-        tasks.forEach(e => {
-            e.style.display = 'none'
-        })
-        js.forEach(e => {
-            e.style.display = 'flex'
-        })
-        other.forEach(e => {
-            e.style.display = 'none'
-        })
-        AOS.refresh()
-    }
-    else if (obj.id === 'other') {
-        tasks.forEach(e => {
-            e.style.display = 'none'
-        })
-        js.forEach(e => {
-            e.style.display = 'none'
-        })
-        other.forEach(e => {
-            e.style.display = 'flex'
-        })
-        AOS.refresh()
-    }
-    else {
-        all.forEach(e => {
-            e.style.display = 'flex'
-        })
-        AOS.refresh()
-    }
+function updateActiveButton(newButton) {
+  filterList.querySelector(".active").classList.remove("active")
+  newButton.classList.add("active")
+}
 
+function filterEvents(filter) {
+  conferences.forEach((conference) => {
+    let eventCategory = conference.getAttribute("data-category")
+    if (filter === "all" || filter === eventCategory) {
+      conference.removeAttribute("hidden")
+    } else {
+      conference.setAttribute("hidden", "")
+    }
+  })
 }
 // Increase Number
-// num.forEach(num => counter(num))
 function counter(obj) {
     var goal = obj.dataset.number
     var count = setInterval( () => {
@@ -137,6 +127,7 @@ function counter(obj) {
         }
     }, 2000 / goal )
 }
+
 
 // Preloader
 if (preloader) {
